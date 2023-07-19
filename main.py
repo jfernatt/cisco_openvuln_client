@@ -2,7 +2,10 @@ import requests
 import argparse
 import json
 
+import pdb
+
 from modules.openvuln_client import OpenVulnClient
+from modules.filter import Filter
 
 def get_client_args():
     parser = argparse.ArgumentParser(
@@ -20,7 +23,10 @@ def main():
     client_args = get_client_args()
     #instantiate client
     oclient = OpenVulnClient(client_args)
+    filter = Filter(client_args)
     #handle user input
+        #single query
+        #read report and query against contents
     #query client
     #format data / generate report
     #return data to user
@@ -29,7 +35,9 @@ def main():
     
     
     #Testing
-    oclient.authenticate()
+    # oclient.authenticate()
+    # oclient.retrieve_all_advisories(None)
+    pdb.set_trace()
     return
 
 if __name__ == '__main__':
