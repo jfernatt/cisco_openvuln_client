@@ -4,6 +4,7 @@ import os
 
 import pdb
 
+from modules.filter import Filter
 from datetime import datetime,timedelta
 
 class OpenVulnClient():
@@ -57,13 +58,20 @@ class OpenVulnClient():
         headers = {'Content-Type' : 'application/x-www-form-urlencoded'}
         params = {'client_id':os.environ.get('CLIENT_ID'), 'client_secret' : os.environ.get('SECRET_KEY'), 'grant_type' : 'client_credentials'}
         response = self.post(uri, headers, params)
-        response_token = json.loads(response.text)
+        try:
+            response_token = json.loads(response.text)
+        except Exception:
+            pdb.set_trace()
         self.authorization_token['token_type'] = response_token['token_type']
         self.authorization_token['expires_at'] = datetime.now() + timedelta(seconds=response_token['expires_in'])
         self.authorization_token['access_token'] = response_token['access_token']
         self.authorization_token['scope'] = response_token['scope']
         print('End of authenticate method')
         print(self.authorization_token['access_token'])
+
+    def construct_filter(self, parameters):
+        filter = Filter(parameters)
+        return filter
 
     def retrieve_advisories(self, filter):
         response = self.get(uri)

@@ -35,9 +35,28 @@ def main():
     
     
     #Testing
-    # oclient.authenticate()
-    # oclient.retrieve_all_advisories(None)
-    pdb.set_trace()
+    #oclient.authenticate()
+    #oclient.retrieve_all_advisories(None)
+    test_query_1 = {'scope': 'all'}
+    # filter = oclient.construct_filter(test_query_1)
+    filter1 = Filter(test_query_1)
+    query_string1 = filter1.make_filter()
+    print(query_string1)
+
+
+    test_query_2 = {'scope': 'all', 'params' : {'severity' : 'high'}}
+    # filter = oclient.construct_filter(test_query_1)
+    filter2 = Filter(test_query_2)
+    query_string2 = filter2.make_filter()
+    print(query_string2)
+
+    test_query_3 = {'scope': 'all', 'params' : {'severity' : 'high', 'firstpublished' : {'startDate' : '2020-12-03', 'endDate' : '2022-12-03'}}}
+    # filter = oclient.construct_filter(test_query_1)
+    filter3 = Filter(test_query_3)
+    query_string3 = filter3.make_filter()
+    print(query_string3)
+
+
     return
 
 if __name__ == '__main__':
