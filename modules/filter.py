@@ -1,13 +1,10 @@
 import pdb
+from datetime import datetime
 
 class Filter:
 
-    def __init__(self, query_params):
-        self.name = 'test'
-        ALL = self.all
-        BY_ID = self.by_id
-        BY_PRODUCT = self.by_product
-        BY_SOFTWARE = self.by_software
+    def __init__(self, base_url, query_params):
+        self.base_url = base_url
         self.query_params = query_params
         self.scope = {
             'all' : self.all,
@@ -15,88 +12,115 @@ class Filter:
             'by_product' : self.by_product,
             'by_software' : self.by_software
         }
+        self.nos_types = [
+            'asa',
+            'fxos',
+            'ftd',
+            'ios',
+            'iosxe',
+            'nxos',
+            'aci',
+            'fmc'
+        ]
+        self.nos_w_platform_types = [
+            'asa',
+            'ftd',
+            'fxos',
+            'nxos'
+        ]
 
+    def constrain_by_date(self):
+        if self.query_params['params'].get('firstpublished'):
+            try:
+                startDate = self.query_params['params']['firstpublished'].get('startDate')
+                endDate = self.query_params['params']['firstpublished'].get('endDate')
+                return f'firstpublished?startDate={startDate}&endDate={endDate}'
+            except Exception:
+                pdb.set_trace()
+                print(
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                quit()
+        elif self.query_params['params'].get('lastpublished'):
+            try:
+                startDate = self.query_params['params']['lastpublished'].get('startDate')
+                endDate = self.query_params['params']['lastpublished'].get('endDate')
+                return f'lastpublished?startDate={startDate}&endDate={endDate}'
+            except Exception:
+                pdb.set_trace()
+                print(
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                quit()
 
-    #All advisories
-        #by first_published
-        #by last_published
-        #by year
-        #by severity rating
-        #by impact score and date range
-        #last x advisories
     def all(self):
-
-        input = self.query_params
+        base_url = self.base_url
+        query_string = f'all/'
         if self.query_params.get('params') is None:
-            return '/all/'
+            return f'{base_url}{query_string}'
         elif self.query_params['params'].get('severity'):
+            query_string = f'severity/{self.query_params["params"].get("severity")}/'
             # severity with first or last published
-            if self.query_params['params'].get('firstpublished'):
-                try:
-                    startDate = self.query_params['params']['firstpublished'].get('startDate')
-                    endDate = self.query_params['params']['firstpublished'].get('endDate')
-                    return f'/severity/{self.query_params["params"].get("severity")}/firstpublished?startDate={startDate}&endDate={endDate}'
-                except Exception:
-                    pdb.set_trace()
-                    print(f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
-                    quit()
-            elif self.query_params.get('lastpublished'):
-                try:
-                    return f'/severity/{self.query_params["params"].get("severity")}/lastpublished?startDate={startDate}&endDate={endDate}'
-                except Exception:
-                    print(f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
-                    quit()
+            if self.query_params['params'].get('firstpublished') or self.query_params['params'].get('lastpublished'):
+                query_string += self.constrain_by_date()
             # severity, no other keys
-            else:
-                severity = self.query_params['params'].get('severity')
-                return f'/all/severity/{severity}'
-        '''
-        if input.keys()[0] in 'firstpublished':
-            #parse start date and end date
-            #f'/all/firstpublished?startDate={}&endDate={}'
-            1+1
-        elif input.keys()[0] in 'lastpublished':
-            #f'/all/lastpublished?startDate={}&endDate={}'
-            1+1
-        elif input.keys()[0] in 'year':
-            1+1
-            #f'/year/firstpublished?startDate={}&endDate={}'
-        if 'latest' in input.keys():
-            #latest X advisories
-            1+1
-        elif input.keys()[0] in 'latest':
-            1+1
-        '''
-        return 'all'
+        elif self.query_params['params'].get('firstpublished') or self.query_params['params'].get('lastpublished'):
+            query_string += self.constrain_by_date()
+        elif self.query_params.get('lastpublished'):
+            try:
+                return f'severity/{self.query_params["params"].get("severity")}/lastpublished?startDate={startDate}&endDate={endDate}'
+            except Exception:
+                print(
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                quit()
+        elif self.query_params['params'].get('year'):
+            query_string = f'year/{self.query_params["params"].get("year")}'
+        elif self.query_params['params'].get('latest'):
+            query_string = f'latest/{self.query_params["params"].get("latest")}'
+        return f'{base_url}{query_string}'
 
-    # By Identifiers
-    # by advisory id
-    # by CVE id
-    # by bug id
     def by_id(self):
-        print('by id')
+        base_url = self.base_url
+        if self.query_params['params'].get('advisory'):
+            query_string = f'advisory/{self.query_params["params"].get("advisory")}'
+        elif self.query_params['params'].get('cve'):
+            query_string = f'cve/{self.query_params["params"].get("cve")}'
+        elif self.query_params['params'].get('bugid'):
+            query_string = f'bugid/{self.query_params["params"].get("bugid")}'
+        return f'{base_url}{query_string}'
 
-    #By Product
-        #by product name combined with security advisory publication
-        #by product
     def by_product(self):
-        print('by product')
+        base_url = self.base_url
+        if self.query_params['params'].get('product_ids'):
+            base_url = 'https://sec.cloudapps.cisco.com/security/center/productBoxData.x?prodType=CISCO'
+            query_string = f''
+        elif self.query_params['params'].get('product'):
+            query_string = f'product?/product={self.query_params["params"].get("product")}'
+        return f'{base_url}{query_string}'
 
-    #By Software
-        #All available version of software
-        #All available platform names
-        #All advisories affecting a version of IOS
-        #All advisories affecting a version of asa
-        #Targeting a specific platform
-        #Specific platform and advisory ID
     def by_software(self):
-        print('by software')
+        base_url = self.base_url
+        #Add filter to nos_types
+        if self.query_params['params'].get('sw_versions'):
+            query_string = f'OS_version/OS_data?OSType={self.query_params["params"].get("sw_versions")}'
+        #Add filter to nos_w_platform_types
+        elif self.query_params['params'].get('platforms'):
+            query_string = f'platforms?OSType={self.query_params["params"].get("platforms")}'
+        #NOS
+        elif self.query_params['params'].get('nos'):
+        #NOS w Platform
+            query_string = f'OSType/{self.query_params["params"].get("nos")}?version={self.query_params["params"].get("version")}'
+            if self.query_params['params'].get('platform'):
+        #NOS w Platform w Advisory
+                query_string += f'&platformAlias={self.query_params["params"].get("platform")}'
+                if self.query_params['params'].get('advisory'):
+                    query_string += f'{self.query_params["params"].get("advisory")}'
+        return f'{base_url}{query_string}'
+
     
     def make_filter(self):
         try:
             scope = self.scope[self.query_params['scope']]
         except Exception:
-            #Raise scope not found exception
+            # Raise scope not found exception
             print(f'Scope not found in params: \n  self.query_params')
         else:
             return scope()

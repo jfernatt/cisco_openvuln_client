@@ -70,63 +70,10 @@ class OpenVulnClient():
         print(self.authorization_token['access_token'])
 
     def construct_filter(self, parameters):
-        filter = Filter(parameters)
+        filter = Filter(self.base_url, parameters)
         return filter
 
     def retrieve_advisories(self, filter):
+        uri = construct_filter()
         response = self.get(uri)
-        return
-        
-    def retrieve_all_advisories(self, filter):
-        #Handle Filter
-        
-        #All advisories
-        ##uri = https://apix.cisco.com/security/advisories/v2/all
-        #All within Date Range
-        ##query string: firstpublished?startDate=2023-01-01&endDate=2023-02-02
-        #Last updated within Date Range
-        ##query string: lastpublished?startDate=2023-01-01&endDate=2023-02-02
-        #All advisories within a given year
-        ##https://apix.cisco.com/security/advisories/v2/year/2023
-        #Advisories with a given SIR rating
-        ##https://apix.cisco.com/security/advisories/v2/severity/Critical
-        #Combining impact score and date range
-        ##https://apix.cisco.com/security/advisories/v2/severity/Critical/firstpublished?startDate=2023-01-01&endDate=2023-03-03
-        #Latest x advisories
-        ##https://apix.cisco.com/security/advisories/v2/latest/5
-        
-        if filter == None:
-            uri = 'https://apix.cisco.com/security/advisories/v2/all'
-        
-        response = self.get(uri)        
-        return
-
-    def retrieve_advisory_by_identifiers(self, advisory_identifier=None, cve_identifier=None, bug_identifier=None):
-        #Retrieve advisory by advisory identifier
-        ##uri = https://apix.cisco.com/security/advisories/v2/advisory/cisco-sa-ipp-oobwrite-8cMF5r7U
-        #Retrieve based on CVE identifier
-        ##https://apix.cisco.com/security/advisories/v2/cve/CVE-2022-20968
-        #Retrieve based on bug identifier
-        ##https://apix.cisco.com/security/advisories/v2/bugid/CSCwb28354
-        return
-
-    def retrieve_advisory_by_product(self, filter):
-        #Retrieve based on Cisco product names used with Security Advisory publication
-        ##https://sec.cloudapps.cisco.com/security/center/productBoxData.x?prodType=CISCO
-        #Retrieve via product
-        ##https://apix.cisco.com/security/advisories/v2/product?product=Cisco%20IOS%20XR
-        return
-
-    def retrieve_advisory_by_software(self, filter):
-        #Retrieve the versions of software which exist in 'Cisco Software Checker'
-        ##https://apix.cisco.com/security/advisories/v2/OS_version/OS_data?OSType=ios
-        #Retrieve the platform names that exist in Cisco Software Checker
-        ##https://apix.cisco.com/security/advisories/v2/platforms?OSType=nxos
-        #Retrieve all advisories impacting a specific version of IOS
-        ##https://apix.cisco.com/security/advisories/v2/OSType/iosxe?version=17.2.1
-        ##https://apix.cisco.com/security/advisories/v2/OSType/asa?version=9.16.1
-        #Target a specific platform
-        ##https://apix.cisco.com/security/advisories/v2/OSType/asa?version=9.16.1&platformAlias=ASAV
-        #specific platform and specific advisory ID
-        ##https://apix.cisco.com/security/advisories/v2/OSType/asa?version=9.16.1&platformAlias=ASAV&advisoryId=cisco-sa-asaftdios-dhcpv6-cli-Zf3zTv
-        return
+        return response
