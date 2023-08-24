@@ -1,6 +1,7 @@
 import pdb
 from datetime import datetime
 
+
 class Filter:
 
     def __init__(self, base_url, query_params):
@@ -32,23 +33,25 @@ class Filter:
     def constrain_by_date(self):
         if self.query_params['params'].get('firstpublished'):
             try:
-                startDate = self.query_params['params']['firstpublished'].get('startDate')
-                endDate = self.query_params['params']['firstpublished'].get('endDate')
-                return f'firstpublished?startDate={startDate}&endDate={endDate}'
+                start_date = self.query_params['params']['firstpublished'].get('startDate')
+                end_date = self.query_params['params']['firstpublished'].get('endDate')
+                return f'firstpublished?startDate={start_date}&endDate={end_date}'
             except Exception:
                 pdb.set_trace()
                 print(
-                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and '
+                    f'endDate')
                 quit()
         elif self.query_params['params'].get('lastpublished'):
             try:
-                startDate = self.query_params['params']['lastpublished'].get('startDate')
-                endDate = self.query_params['params']['lastpublished'].get('endDate')
-                return f'lastpublished?startDate={startDate}&endDate={endDate}'
+                start_date = self.query_params['params']['lastpublished'].get('startDate')
+                end_date = self.query_params['params']['lastpublished'].get('endDate')
+                return f'lastpublished?startDate={start_date}&endDate={end_date}'
             except Exception:
                 pdb.set_trace()
                 print(
-                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and '
+                    f'endDate')
                 quit()
 
     def all(self):
@@ -69,7 +72,8 @@ class Filter:
                 return f'severity/{self.query_params["params"].get("severity")}/lastpublished?startDate={startDate}&endDate={endDate}'
             except Exception:
                 print(
-                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and endDate')
+                    f'Dates not parsed in in params: \n  self.query_params\n  firstpublished requires startDate and '
+                    f'endDate')
                 quit()
         elif self.query_params['params'].get('year'):
             query_string = f'year/{self.query_params["params"].get("year")}'
@@ -85,6 +89,8 @@ class Filter:
             query_string = f'cve/{self.query_params["params"].get("cve")}'
         elif self.query_params['params'].get('bugid'):
             query_string = f'bugid/{self.query_params["params"].get("bugid")}'
+        else:
+            query_string = ''
         return f'{base_url}{query_string}'
 
     def by_product(self):
@@ -94,27 +100,30 @@ class Filter:
             query_string = f''
         elif self.query_params['params'].get('product'):
             query_string = f'product?/product={self.query_params["params"].get("product")}'
+        else:
+            query_string = ''
         return f'{base_url}{query_string}'
 
     def by_software(self):
         base_url = self.base_url
-        #Add filter to nos_types
+        # Add filter to nos_types
         if self.query_params['params'].get('sw_versions'):
             query_string = f'OS_version/OS_data?OSType={self.query_params["params"].get("sw_versions")}'
-        #Add filter to nos_w_platform_types
+        # Add filter to nos_w_platform_types
         elif self.query_params['params'].get('platforms'):
             query_string = f'platforms?OSType={self.query_params["params"].get("platforms")}'
-        #NOS
+        # NOS
         elif self.query_params['params'].get('nos'):
-        #NOS w Platform
             query_string = f'OSType/{self.query_params["params"].get("nos")}?version={self.query_params["params"].get("version")}'
+            # NOS w Platform
             if self.query_params['params'].get('platform'):
-        #NOS w Platform w Advisory
                 query_string += f'&platformAlias={self.query_params["params"].get("platform")}'
+                # NOS w Platform w Advisory
                 if self.query_params['params'].get('advisory'):
                     query_string += f'{self.query_params["params"].get("advisory")}'
+        else:
+            query_string = ''
         return f'{base_url}{query_string}'
-
     
     def make_filter(self):
         try:
