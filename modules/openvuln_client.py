@@ -71,8 +71,8 @@ class OpenVulnClient:
         print(self.authorization_token['access_token'])
 
     def construct_filter(self, parameters):
-        filter = Filter(self.base_url, parameters)
-        uri = filter.make_filter()
+        filter = Filter(self.base_url)
+        uri = filter.make_filter(parameters)
         return uri
 
     def retrieve_advisories(self, filter):

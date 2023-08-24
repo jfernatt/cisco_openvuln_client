@@ -4,15 +4,17 @@ from datetime import datetime
 
 class Filter:
 
-    def __init__(self, base_url, query_params):
+    def __init__(self, base_url):
         self.base_url = base_url
-        self.query_params = query_params
+        self.query_params = None
         self.scope = {
             'all' : self.all,
             'by_id' : self.by_id,
             'by_product' : self.by_product,
             'by_software' : self.by_software
         }
+        # NOS Types List Located at:
+        # https://developer.cisco.com/docs/psirt/#!obtain-advisory-by-software/retrieve-advisory-based-on-software-version
         self.nos_types = [
             'asa',
             'fxos',
@@ -125,7 +127,8 @@ class Filter:
             query_string = ''
         return f'{base_url}{query_string}'
     
-    def make_filter(self):
+    def make_filter(self, query_params):
+        self.query_params = query_params
         try:
             scope = self.scope[self.query_params['scope']]
         except Exception:
