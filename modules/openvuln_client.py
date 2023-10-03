@@ -43,6 +43,7 @@ class OpenVulnClient:
                 quit()
             else:
                 print(f'Status Code : {response.status_code}\nMessage: {response.text}')
+                return response
         return send
 
     @send_request
