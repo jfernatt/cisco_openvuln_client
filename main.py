@@ -197,9 +197,11 @@ def sort_vuln_queries(csv_file):
 
 def output_csv(vuln_query_results):
     print('Writing file...')
-    csv_header = ','.join([i for i in csv_file[0].keys()])
+    csv_header = [i for i in csv_file[0].keys()]
     csv_header.extend(['advisoryTitle','cves','cvssBaseScore','lastUpdated','publicationUrl'])
-    output_csv_rows = csv_header
+    csv_header = ','.join(csv_header)
+    output_csv_rows = []
+    output_csv_rows.append(csv_header)
     for row in csv_file:
         print(f' {row}')
         if vuln_query_results[row['NOS']]['versions'].get(row['Version']):
